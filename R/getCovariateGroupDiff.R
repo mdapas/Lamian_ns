@@ -25,7 +25,7 @@ getCovariateGroupDiff <- function(testobj,
   pseudotime = seq(1, max(testobj$pseudotime), length.out = min(num.timepoint, max(testobj$pseudotime)))
   if ('testvar' %in% names(testobj)) testvar = testobj$testvar
   beta <- lapply(gene, function(g) {
-    tmp = matrix(testobj$parameter[[g]]$beta, ncol = knotnum[g]+4)
+    tmp = matrix(testobj$parameter[[g]]$beta, ncol = knotnum[g]+2)
     if (reverse){
       - as.vector(tmp[c(1,testvar), ])
     } else {
@@ -38,12 +38,13 @@ getCovariateGroupDiff <- function(testobj,
     lapply(min(knotnum):max(knotnum), function(num.knot) {
       if (num.knot == 0) {
         # phi <- cbind(1, bs(pseudotime))
-        phi <- bs(pseudotime, intercept = TRUE)
+        phi <- ns(pseudotime, intercept = TRUE)
       } else {
         knots = seq(min(pseudotime), max(pseudotime), length.out = num.knot + 2)[2:(num.knot +
                                                                                       1)]
         # phi <- cbind(1, bs(pseudotime, knots = knots))
-        phi <- bs(pseudotime,knots = knots, intercept = TRUE)
+        boundary.knots <- c(knots[1]/2, knots[knotnum]+knots[1]/2)
+        phi <- ns(pseudotime,knots = knots, intercept = TRUE, Boundary.knots = boundary.knots)
       }
     })
   names(philist) <- as.character(min(knotnum):max(knotnum))
