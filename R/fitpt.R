@@ -29,11 +29,12 @@ fitpt <- function(expr, cellanno, pseudotime, design, testvar=testvar,maxknotall
   philist <- lapply(0:maxknotallowed,function(num.knot) {
     if (num.knot==0) {
       # phi <- cbind(1,bs(pseudotime))
-      phi <- bs(pseudotime, intercept = TRUE)
+      phi <- ns(pseudotime, intercept = TRUE)
     } else {
       knots = seq(min(pseudotime),max(pseudotime),length.out=num.knot+2)[2:(num.knot+1)]
-      # phi <- cbind(1,bs(pseudotime,knots = knots))  
-      phi <- bs(pseudotime,knots = knots, intercept = TRUE)
+      # phi <- cbind(1,bs(pseudotime,knots = knots))
+      boundary.knots <- c(knots[1]/2, knots[num.knot]+knots[1]/2)
+      phi <- ns(pseudotime,knots = knots, intercept = TRUE, Boundary.knots=boundary.knots)
     }
   })
   names(philist) <- as.character(0:maxknotallowed)
@@ -98,19 +99,19 @@ fitpt <- function(expr, cellanno, pseudotime, design, testvar=testvar,maxknotall
     
     if (model == -1){
       xs <- sapply(row.names(design), function(i) {
-        kronecker(diag(num.knot + 4), 1)
+        kronecker(diag(num.knot + 2), 1)
       }, simplify = F)
     } else if (model == 1) {
       xs <- sapply(row.names(design), function(i) {
-        kronecker(diag(num.knot + 4), design[i,-testvar])
+        kronecker(diag(num.knot + 2), design[i,-testvar])
       }, simplify = F)
     } else if (model == 2) {
       xs <- sapply(row.names(design), function(i) {  ## change X
-        rbind(design[i,testvar],kronecker(diag(num.knot + 4), design[i,-testvar]))
+        rbind(design[i,testvar],kronecker(diag(num.knot + 2), design[i,-testvar]))
       }, simplify = F)
     } else if (model == 3) {
       xs <- sapply(row.names(design), function(i) {
-        kronecker(diag(num.knot + 4), design[i, ])
+        kronecker(diag(num.knot + 2), design[i, ])
       }, simplify = F)
     }
     
