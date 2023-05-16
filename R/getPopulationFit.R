@@ -60,17 +60,18 @@ getPopulationFit <- function(testobj,
     }
       
     x <- sapply(row.names(design), function(i) {
-      kronecker(diag(knotnum[g] + 4), design[i, , drop = FALSE]) ###
+      kronecker(diag(knotnum[g] + 2), design[i, , drop = FALSE]) ###
     }, simplify = FALSE)
     
     
     if (knotnum[g] == 0) {
       # phi <- cbind(1, bs(pt))
-      phi <- bs(pt, intercept = TRUE)
+      phi <- ns(pt, intercept = TRUE)
     } else {
       knots = seq(min(pt), max(pt), length.out = knotnum[g] + 2)[2:(knotnum[g] + 1)]
       # phi <- cbind(1, bs(pt, knots = knots))
-      phi <- bs(pt,knots = knots, intercept = TRUE)
+      boundary.knots <- c(knots[1]/2, knots[knotnum[g]]+knots[1]/2)
+      phi <- ns(pt,knots = knots, intercept = TRUE, Boundary.knots=boundary.knots)
     }
     
     if (type == 'VARIABLE') {
