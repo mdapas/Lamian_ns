@@ -43,7 +43,7 @@ getCovariateGroupDiff <- function(testobj,
         knots = seq(min(pseudotime), max(pseudotime), length.out = num.knot + 2)[2:(num.knot +
                                                                                       1)]
         # phi <- cbind(1, bs(pseudotime, knots = knots))
-        boundary.knots <- c(knots[1]/2, knots[knotnum]+knots[1]/2)
+        boundary.knots <- c(knots[1]/2, knots[num.knot]+knots[1]/2)
         phi <- ns(pseudotime,knots = knots, intercept = TRUE, Boundary.knots = boundary.knots)
       }
     })
